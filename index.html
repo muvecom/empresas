@@ -198,6 +198,7 @@
             <table>
                 <thead>
                     <tr>
+                        <th>Última atualização</th>
                         <th>Cliente</th>
                         <th style="text-align: right;">Ação</th>
                     </tr>
@@ -243,29 +244,28 @@
 
                 const data = await response.json();
 
-                // Verifica se o retorno é realmente o array esperado
                 if (!Array.isArray(data)) {
                     throw new Error('Formato de resposta inválido');
                 }
 
-                // 1. Iterar para remover tokens repetidos e manter sempre o de maior ID (mais atual)
-                const tokensMap = new Map();
+                // 1. Iterar para remover nomes repetidos e manter sempre o de maior ID (mais atual)
+                const companyMap = new Map();
                 data.forEach(item => {
-                    if (!item.token) return; // ignora se não tiver token
+                    if (!item.company || !item.token) return; // ignora se não tiver company ou token
                     
-                    if (!tokensMap.has(item.token)) {
-                        tokensMap.set(item.token, item);
+                    if (!companyMap.has(item.company)) {
+                        companyMap.set(item.company, item);
                     } else {
                         // Se já existe, compara qual tem o ID maior e mantém ele
-                        const existingItem = tokensMap.get(item.token);
+                        const existingItem = companyMap.get(item.company);
                         if (item.id > existingItem.id) {
-                            tokensMap.set(item.token, item);
+                            companyMap.set(item.company, item);
                         }
                     }
                 });
 
                 // 2. Transforma o Map novamente em Array
-                let uniqueClients = Array.from(tokensMap.values());
+                let uniqueClients = Array.from(companyMap.values());
 
                 // 3. Ordena a lista de forma decrescente pelo ID (mais novos primeiro)
                 uniqueClients.sort((a, b) => b.id - a.id);
@@ -276,9 +276,20 @@
                 uniqueClients.forEach(client => {
                     const tr = document.createElement('tr');
                     
+                    // Coluna da Última Atualização (Data formatada)
+                    const tdDate = document.createElement('td');
+                    if (client.created_at) {
+                        const dateObj = new Date(client.created_at);
+                        const dataFormatada = dateObj.toLocaleDateString('pt-BR');
+                        const horaFormatada = dateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                        tdDate.textContent = `${dataFormatada} às ${horaFormatada}`;
+                    } else {
+                        tdDate.textContent = '-';
+                    }
+
                     // Coluna do Nome da Empresa
                     const tdCompany = document.createElement('td');
-                    tdCompany.textContent = client.company || 'Empresa não informada';
+                    tdCompany.textContent = client.company;
                     
                     // Coluna da Ação (Botão)
                     const tdAction = document.createElement('td');
@@ -291,6 +302,9 @@
                     btn.textContent = 'Acessar Dashboard';
                     
                     tdAction.appendChild(btn);
+
+                    // Adiciona as colunas na linha
+                    tr.appendChild(tdDate);
                     tr.appendChild(tdCompany);
                     tr.appendChild(tdAction);
                     
@@ -299,7 +313,7 @@
 
                 // Se houver clientes, expande o contêiner e mostra a tabela
                 if(uniqueClients.length > 0) {
-                    mainContainer.style.maxWidth = '800px'; // Aumenta a largura da caixa para caber a tabela
+                    mainContainer.style.maxWidth = '900px'; // Aumentei um pouco mais para acomodar a nova coluna de data
                     loginSection.style.display = 'none';
                     dashboardSection.style.display = 'block';
                 } else {
