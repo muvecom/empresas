@@ -212,6 +212,9 @@
     </div>
 
     <script>
+        window.onload = function() {
+            document.getElementById('password').focus();
+        };
         document.getElementById('login-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
