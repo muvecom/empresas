@@ -162,29 +162,54 @@
             margin-top: 1rem;
         }
 
-        .btn-outline {
-            background-color: white;
-            color: var(--primary-color);
-            border: 1px solid var(--primary-color);
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.2s;
-            font-size: 0.9rem;
-        }
-
-        .btn-outline:hover {
-            background-color: #f4f7f6;
-        }
-
-        .nav-actions {
+        .table-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border-color);
+            padding: 0 0.5rem;
+        }
+
+        .btn-add-inline {
+            background-color: var(--primary-color);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-add-inline:hover {
+            background-color: var(--primary-hover);
+            transform: scale(1.1);
+        }
+
+        .add-client-helper {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .link-add {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .link-add:hover {
+            text-decoration: underline;
         }
 
         @keyframes fadeIn {
@@ -244,15 +269,9 @@
 
         <!-- SEÇÃO DA LISTA DE CLIENTES -->
         <div id="dashboard-section">
-            <div class="nav-actions">
-                <button class="btn-outline" onclick="refreshClients()" id="btn-refresh">🔄 Atualizar Lista</button>
-                <button class="btn" style="padding: 0.5rem 1rem;" onclick="openModal()">+ Adicionar Cliente</button>
-            </div>
-
-            <div class="dashboard-header">
-                <h2>Lista de Clientes</h2>
-                <p style="color: #666; margin-top: 0.5rem;">Selecione o cliente abaixo para acessar o respectivo
-                    dashboard.</p>
+            <div class="table-header">
+                <h2>Clientes Ativos</h2>
+                <button class="btn-add-inline" onclick="openModal()" title="Adicionar Cliente">+</button>
             </div>
 
             <table>
@@ -267,13 +286,16 @@
                     <!-- Os clientes serão inseridos aqui via JavaScript -->
                 </tbody>
             </table>
+
+            <div class="add-client-helper">
+                <span class="link-add" onclick="openModal()">Está faltando algum cliente? Clique aqui para
+                    adicionar.</span>
+            </div>
         </div>
 
     </div>
 
     <script>
-        let currentPassword = null;
-
         // Criptografia simulada pra não expor em texto no front
         const encodedEndpoint = "aHR0cHM6Ly9hcGkubXV2ZWNvbS5jb20uYnIvdjEvbXV2ZWNvbS1nb2xkZW4tc3RhbmRhcmQtdGVzdA==";
 
@@ -302,19 +324,6 @@
             });
         }
 
-        async function refreshClients() {
-            if (!currentPassword) return;
-            const btnRefresh = document.getElementById('btn-refresh');
-            const originalText = btnRefresh.innerHTML;
-            btnRefresh.innerHTML = '🔄 Atualizando...';
-            btnRefresh.disabled = true;
-
-            await fetchAndRenderClients(currentPassword);
-
-            btnRefresh.innerHTML = originalText;
-            btnRefresh.disabled = false;
-        }
-
         document.getElementById('login-form').addEventListener('submit', async function (e) {
             e.preventDefault();
             const password = document.getElementById('password').value;
@@ -330,9 +339,7 @@
             const mainContainer = document.getElementById('main-container');
 
             errorMessage.style.display = 'none';
-            if (loginSection.style.display !== 'none') {
-                loading.style.display = 'block';
-            }
+            loading.style.display = 'block';
 
             try {
                 // Faz a requisição POST com a senha
@@ -351,9 +358,6 @@
                 if (!Array.isArray(data)) {
                     throw new Error('Formato de resposta inválido');
                 }
-
-                // Sucesso -> Guarda a senha em memória
-                currentPassword = password;
 
                 // 1. Iterar para remover nomes repetidos e manter sempre o de maior ID (mais atual)
                 const companyMap = new Map();
@@ -432,7 +436,6 @@
                 errorMessage.textContent = 'Senha incorreta. Tente novamente.';
                 errorMessage.style.display = 'block';
                 document.getElementById('password').value = '';
-                currentPassword = null;
             } finally {
                 loading.style.display = 'none';
             }
