@@ -13,6 +13,7 @@
             --card-bg: #ffffff;
             --text-color: #333333;
             --border-color: #e0e0e0;
+            --overlay-bg: rgba(0, 0, 0, 0.6);
         }
 
         * {
@@ -45,15 +46,14 @@
         .container {
             background-color: var(--card-bg);
             padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
             width: 100%;
             max-width: 500px;
-            /* Largura inicial para o login */
             transition: max-width 0.4s ease;
         }
 
-        /* Estilos do Formulário de Login */
+        /* Login Section */
         #login-section {
             display: flex;
             flex-direction: column;
@@ -73,7 +73,7 @@
         .form-group input {
             padding: 0.75rem;
             border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 1rem;
             outline: none;
             transition: border-color 0.2s;
@@ -88,13 +88,13 @@
             color: white;
             padding: 0.75rem 1.5rem;
             border: none;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             text-align: center;
             text-decoration: none;
-            transition: background-color 0.2s;
+            transition: background-color 0.2s, transform 0.1s;
             display: inline-block;
         }
 
@@ -102,27 +102,50 @@
             background-color: var(--primary-hover);
         }
 
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1.5px solid var(--primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(0, 86, 179, 0.05);
+        }
+
         .error-message {
             color: #d9534f;
             background-color: #fdf7f7;
             border: 1px solid #d9534f;
             padding: 0.75rem;
-            border-radius: 4px;
+            border-radius: 6px;
             font-size: 0.9rem;
             display: none;
             text-align: center;
         }
 
-        /* Estilos da Tabela de Clientes */
+        /* Dashboard Section */
         #dashboard-section {
             display: none;
             width: 100%;
             animation: fadeIn 0.5s ease;
         }
 
-        .dashboard-header {
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 1.5rem;
-            text-align: center;
+            padding: 0 0.5rem;
         }
 
         table {
@@ -141,62 +164,22 @@
         th {
             background-color: #f8f9fa;
             font-weight: 600;
-        }
-
-        td {
-            vertical-align: middle;
+            color: #666;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05rem;
         }
 
         .btn-acessar {
             padding: 0.5rem 1rem;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             white-space: nowrap;
-        }
-
-        /* Loader */
-        #loading {
-            display: none;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #666;
-            margin-top: 1rem;
-        }
-
-        .table-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            padding: 0 0.5rem;
-        }
-
-        .btn-add-inline {
-            background-color: var(--primary-color);
-            color: white;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-            transition: transform 0.2s, background-color 0.2s;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-add-inline:hover {
-            background-color: var(--primary-hover);
-            transform: scale(1.1);
         }
 
         .add-client-helper {
             text-align: center;
             margin-top: 1.5rem;
-            padding: 1rem;
+            padding-top: 1.5rem;
             border-top: 1px solid var(--border-color);
         }
 
@@ -210,6 +193,127 @@
 
         .link-add:hover {
             text-decoration: underline;
+        }
+
+        .btn-add-circle {
+            background-color: var(--primary-color);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 0 4px 10px rgba(0, 86, 179, 0.2);
+        }
+
+        .btn-add-circle:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--overlay-bg);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(3px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal {
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 550px;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .modal p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        .btn-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.2s;
+        }
+
+        .btn-close:hover {
+            color: #333;
+        }
+
+        .url-box {
+            background-color: #f8f9fa;
+            border: 1.5px dashed var(--border-color);
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        #instruction-code {
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .btn-copy {
+            background-color: #28a745;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+
+        .btn-copy:hover {
+            background-color: #218838;
+        }
+
+        #loading {
+            display: none;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 1rem;
         }
 
         @keyframes fadeIn {
@@ -230,19 +334,27 @@
     <div class="modal-overlay" id="addClientModal">
         <div class="modal">
             <button class="btn-close" onclick="closeModal()">&times;</button>
-            <h3>Adicionar Cliente ou Teste</h3>
-            <p>Para incluir novos clientes ou enviar os dados de um novo teste interativo para o dashboard, oriente o
-                seu time técnico a apontar o sistema deles para a nossa URL de testes preenchendo os campos obrigatórios
-                (<strong>mensagem</strong>, <strong>nome</strong> e <strong>webhook</strong>).</p>
-            <p style="margin-bottom: 0.5rem;"><strong>Copie a URL abaixo:</strong></p>
+            <h3>Adicionar Cliente</h3>
+            <p>Para que um novo cliente apareça nesta lista, é necessário realizar pelo menos <strong>um teste de
+                    agente</strong> enviando os dados para o endpoint abaixo.</p>
+            <p>Oriente seu time técnico (TI/Dev) a disparar uma requisição com os campos: <strong>mensagem</strong>,
+                <strong>nome</strong> e <strong>webhook</strong>.</p>
 
-            <div class="code-block"
-                style="display: flex; justify-content: space-between; align-items: center; padding-right: 80px;">
-                <span id="instruction-code" style="word-break: break-all; font-size: 0.95rem;"></span>
+            <div class="url-box">
+                <span id="instruction-code">Carregando...</span>
                 <button class="btn-copy" onclick="copyInstructions(this)">Copiar URL</button>
             </div>
-            <p style="font-size: 0.8rem; color: #888;">Nota: O endpoint está mascarado por segurança no código-fonte e é
-                restrito a esse painel.</p>
+
+            <p
+                style="font-size: 0.85rem; background: #fff3cd; padding: 0.75rem; border-radius: 6px; border-left: 4px solid #ffc107; color: #856404;">
+                <strong>Nota:</strong> Após o time técnico realizar o disparo, clique no botão de atualizar no painel
+                principal ou feche esta janela e use o botão de atualizar.
+            </p>
+
+            <div style="text-align: center; margin-top: 1.5rem;">
+                <button class="btn" style="width: 100%;" onclick="refreshClients()">🔄 Já fizeram o teste? Atualizar
+                    lista agora</button>
+            </div>
         </div>
     </div>
 
@@ -270,45 +382,48 @@
         <!-- SEÇÃO DA LISTA DE CLIENTES -->
         <div id="dashboard-section">
             <div class="table-header">
-                <h2>Clientes Ativos</h2>
-                <button class="btn-add-inline" onclick="openModal()" title="Adicionar Cliente">+</button>
+                <h2 style="font-size: 1.25rem;">Clientes Ativos</h2>
+                <div style="display: flex; gap: 0.75rem; align-items: center;">
+                    <button class="btn-outline" onclick="refreshClients()" id="btn-refresh">🔄 Atualizar</button>
+                    <button class="btn-add-circle" onclick="openModal()" title="Adicionar Cliente">+</button>
+                </div>
             </div>
 
-            <table>
+            <table id="clients-table">
                 <thead>
                     <tr>
-                        <th>Última atualização</th>
+                        <th>Atualização</th>
                         <th>Cliente</th>
                         <th style="text-align: right;">Ação</th>
                     </tr>
                 </thead>
                 <tbody id="clients-table-body">
-                    <!-- Os clientes serão inseridos aqui via JavaScript -->
+                    <!-- Clientes via JavaScript -->
                 </tbody>
             </table>
 
             <div class="add-client-helper">
                 <span class="link-add" onclick="openModal()">Está faltando algum cliente? Clique aqui para
-                    adicionar.</span>
+                    instruções.</span>
             </div>
         </div>
 
     </div>
 
     <script>
-        // Criptografia simulada pra não expor em texto no front
+        let currentPassword = null;
         const encodedEndpoint = "aHR0cHM6Ly9hcGkubXV2ZWNvbS5jb20uYnIvdjEvbXV2ZWNvbS1nb2xkZW4tc3RhbmRhcmQtdGVzdA==";
 
         window.onload = function () {
             document.getElementById('password').focus();
         };
 
-        function getInstructionsUrl() {
+        function getBaseUrl() {
             return atob(encodedEndpoint);
         }
 
         function openModal() {
-            document.getElementById('instruction-code').textContent = getInstructionsUrl();
+            document.getElementById('instruction-code').textContent = getBaseUrl();
             document.getElementById('addClientModal').style.display = 'flex';
         }
 
@@ -317,11 +432,29 @@
         }
 
         function copyInstructions(btn) {
-            navigator.clipboard.writeText(getInstructionsUrl()).then(() => {
+            const url = getBaseUrl();
+            navigator.clipboard.writeText(url).then(() => {
                 const originalText = btn.textContent;
                 btn.textContent = 'Copiado!';
-                setTimeout(() => { btn.textContent = originalText; }, 2000);
+                btn.style.backgroundColor = '#218838';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.backgroundColor = '#28a745';
+                }, 2000);
             });
+        }
+
+        async function refreshClients() {
+            if (!currentPassword) return;
+            const btn = document.getElementById('btn-refresh');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '...';
+            btn.disabled = true;
+
+            await fetchAndRenderClients(currentPassword);
+
+            btn.innerHTML = originalText;
+            btn.disabled = false;
         }
 
         document.getElementById('login-form').addEventListener('submit', async function (e) {
@@ -339,103 +472,80 @@
             const mainContainer = document.getElementById('main-container');
 
             errorMessage.style.display = 'none';
-            loading.style.display = 'block';
+            if (loginSection.style.display !== 'none') {
+                loading.style.display = 'block';
+            }
 
             try {
-                // Faz a requisição POST com a senha
                 const response = await fetch('https://api.muvecom.com.br/v1/e8df5ebb-4f25-41d8-a5ce-baddb986dff6', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ password: password })
                 });
 
-                if (!response.ok) {
-                    throw new Error('Senha incorreta');
-                }
+                if (!response.ok) throw new Error('Senha incorreta');
 
                 const data = await response.json();
+                if (!Array.isArray(data)) throw new Error('Formato inválido');
 
-                if (!Array.isArray(data)) {
-                    throw new Error('Formato de resposta inválido');
-                }
+                // Sucesso: Persiste a senha para refresh
+                currentPassword = password;
 
-                // 1. Iterar para remover nomes repetidos e manter sempre o de maior ID (mais atual)
                 const companyMap = new Map();
                 data.forEach(item => {
-                    if (!item.company || !item.token) return; // ignora se não tiver company ou token
-
-                    if (!companyMap.has(item.company)) {
+                    if (!item.company || !item.token) return;
+                    if (!companyMap.has(item.company) || item.id > companyMap.get(item.company).id) {
                         companyMap.set(item.company, item);
-                    } else {
-                        // Se já existe, compara qual tem o ID maior e mantém ele
-                        const existingItem = companyMap.get(item.company);
-                        if (item.id > existingItem.id) {
-                            companyMap.set(item.company, item);
-                        }
                     }
                 });
 
-                // 2. Transforma o Map novamente em Array
                 let uniqueClients = Array.from(companyMap.values());
-
-                // 3. Ordena a lista de forma decrescente pelo ID (mais novos primeiro)
                 uniqueClients.sort((a, b) => b.id - a.id);
 
-                // 4. Montar a tabela
-                tableBody.innerHTML = ''; // Limpa a tabela antes de preencher
-
+                tableBody.innerHTML = '';
                 uniqueClients.forEach(client => {
                     const tr = document.createElement('tr');
 
-                    // Coluna da Última Atualização (Data formatada)
                     const tdDate = document.createElement('td');
                     if (client.created_at) {
                         const dateObj = new Date(client.created_at);
-                        const dataFormatada = dateObj.toLocaleDateString('pt-BR');
-                        const horaFormatada = dateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                        tdDate.textContent = `${dataFormatada} às ${horaFormatada}`;
-                    } else {
-                        tdDate.textContent = '-';
-                    }
+                        tdDate.textContent = dateObj.toLocaleDateString('pt-BR') + ' ' + dateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                    } else { tdDate.textContent = '-'; }
 
-                    // Coluna do Nome da Empresa
                     const tdCompany = document.createElement('td');
+                    tdCompany.style.fontWeight = '600';
                     tdCompany.textContent = client.company;
 
-                    // Coluna da Ação (Botão)
                     const tdAction = document.createElement('td');
                     tdAction.style.textAlign = 'right';
-
                     const btn = document.createElement('a');
                     btn.href = `https://muvecom.github.io/dashboard-qa/?token=${encodeURIComponent(client.token)}`;
-                    btn.target = '_blank'; // Abre em nova guia
+                    btn.target = '_blank';
                     btn.className = 'btn btn-acessar';
-                    btn.textContent = 'Acessar Dashboard';
-
+                    btn.textContent = 'Dashboard';
                     tdAction.appendChild(btn);
 
-                    // Adiciona as colunas na linha
                     tr.appendChild(tdDate);
                     tr.appendChild(tdCompany);
                     tr.appendChild(tdAction);
-
                     tableBody.appendChild(tr);
                 });
 
                 if (uniqueClients.length > 0) {
-                    mainContainer.style.maxWidth = '900px';
+                    mainContainer.style.maxWidth = '850px';
                     loginSection.style.display = 'none';
                     dashboardSection.style.display = 'block';
+                    closeModal(); // Fecha se estiver aberto
                 } else {
-                    errorMessage.textContent = "Nenhum cliente com token encontrado.";
+                    errorMessage.textContent = "Nenhum cliente ativo encontrado.";
                     errorMessage.style.display = 'block';
                 }
 
             } catch (error) {
-                // Em caso de erro (senha errada ou falha na API), mostra o aviso
                 errorMessage.textContent = 'Senha incorreta. Tente novamente.';
                 errorMessage.style.display = 'block';
                 document.getElementById('password').value = '';
+                currentPassword = null;
             } finally {
                 loading.style.display = 'none';
             }
