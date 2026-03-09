@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Muvecom - Acesso a Clientes</title>
     <style>
         :root {
-            --primary-color: #0056b3; 
+            --primary-color: #0056b3;
             --primary-hover: #004494;
             --bg-color: #f4f7f6;
             --card-bg: #ffffff;
@@ -47,7 +48,8 @@
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 500px; /* Largura inicial para o login */
+            max-width: 500px;
+            /* Largura inicial para o login */
             transition: max-width 0.4s ease;
         }
 
@@ -129,7 +131,8 @@
             margin-top: 1rem;
         }
 
-        th, td {
+        th,
+        td {
             padding: 1rem;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
@@ -159,25 +162,74 @@
             margin-top: 1rem;
         }
 
+        .btn-outline {
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn-outline:hover {
+            background-color: #f4f7f6;
+        }
+
+        .nav-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
     </style>
 </head>
+
 <body>
+
+    <!-- MODAL DE INSTRUÇÃO -->
+    <div class="modal-overlay" id="addClientModal">
+        <div class="modal">
+            <button class="btn-close" onclick="closeModal()">&times;</button>
+            <h3>Adicionar Cliente ou Teste</h3>
+            <p>Para incluir novos clientes ou enviar os dados estruturados de um novo teste para o dashboard, repasse as
+                instruções do cURL abaixo para o seu time técnico (TI/Dev/QA).</p>
+            <p>Eles deverão enviar um requisição POST em formato JSON preenchendo os campos obrigatórios:</p>
+
+            <div class="code-block">
+                <button class="btn-copy" onclick="copyInstructions(this)">Copiar</button>
+                <span id="instruction-code"></span>
+            </div>
+            <p style="font-size: 0.8rem; color: #888;">Nota: O endpoint está mascarado por segurança no código-fonte e é
+                restrito a esse painel.</p>
+        </div>
+    </div>
 
     <div class="header">
         <img src="https://app.muvecom.com.br/build/assets/logo-muvecom-JsspMMSD.png" alt="Logo Muvecom">
     </div>
 
     <div class="container" id="main-container">
-        
+
         <!-- SEÇÃO DE LOGIN -->
         <div id="login-section">
             <h2 style="text-align: center; margin-bottom: 1rem;">Acesso Restrito</h2>
             <div class="error-message" id="error-message">Senha incorreta. Tente novamente.</div>
-            
+
             <form id="login-form">
                 <div class="form-group">
                     <label for="password">Digite sua senha:</label>
@@ -190,11 +242,17 @@
 
         <!-- SEÇÃO DA LISTA DE CLIENTES -->
         <div id="dashboard-section">
+            <div class="nav-actions">
+                <button class="btn-outline" onclick="refreshClients()" id="btn-refresh">🔄 Atualizar Lista</button>
+                <button class="btn" style="padding: 0.5rem 1rem;" onclick="openModal()">+ Adicionar Cliente</button>
+            </div>
+
             <div class="dashboard-header">
                 <h2>Lista de Clientes</h2>
-                <p style="color: #666; margin-top: 0.5rem;">Selecione o cliente abaixo para acessar o respectivo dashboard.</p>
+                <p style="color: #666; margin-top: 0.5rem;">Selecione o cliente abaixo para acessar o respectivo
+                    dashboard.</p>
             </div>
-            
+
             <table>
                 <thead>
                     <tr>
@@ -212,13 +270,57 @@
     </div>
 
     <script>
-        window.onload = function() {
+        let currentPassword = null;
+
+        // Criptografia simulada pra não expor em texto no front
+        const encodedEndpoint = "aHR0cHM6Ly9hcGkubXV2ZWNvbS5jb20uYnIvdjEvbXV2ZWNvbS1nb2xkZW4tc3RhbmRhcmQtdGVzdA==";
+
+        window.onload = function () {
             document.getElementById('password').focus();
         };
-        document.getElementById('login-form').addEventListener('submit', async function(e) {
+
+        function getInstructionsUrl() {
+            const urlFormatada = atob(encodedEndpoint);
+            return `curl -X POST "${urlFormatada}" \\\n     -H "Content-Type: application/json" \\\n     -d '{\n           "mensagem": "Obrigatório", \n           "nome": "Obrigatório (não vazio)",\n           "webhook": "Obrigatório (não vazio)",\n           "token": "Opcional"\n         }'`;
+        }
+
+        function openModal() {
+            document.getElementById('instruction-code').textContent = getInstructionsUrl();
+            document.getElementById('addClientModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('addClientModal').style.display = 'none';
+        }
+
+        function copyInstructions(btn) {
+            navigator.clipboard.writeText(getInstructionsUrl()).then(() => {
+                const originalText = btn.textContent;
+                btn.textContent = 'Copiado!';
+                setTimeout(() => { btn.textContent = originalText; }, 2000);
+            });
+        }
+
+        async function refreshClients() {
+            if (!currentPassword) return;
+            const btnRefresh = document.getElementById('btn-refresh');
+            const originalText = btnRefresh.innerHTML;
+            btnRefresh.innerHTML = '🔄 Atualizando...';
+            btnRefresh.disabled = true;
+
+            await fetchAndRenderClients(currentPassword);
+
+            btnRefresh.innerHTML = originalText;
+            btnRefresh.disabled = false;
+        }
+
+        document.getElementById('login-form').addEventListener('submit', async function (e) {
             e.preventDefault();
-            
             const password = document.getElementById('password').value;
+            await fetchAndRenderClients(password);
+        });
+
+        async function fetchAndRenderClients(password) {
             const errorMessage = document.getElementById('error-message');
             const loading = document.getElementById('loading');
             const loginSection = document.getElementById('login-section');
@@ -226,21 +328,19 @@
             const tableBody = document.getElementById('clients-table-body');
             const mainContainer = document.getElementById('main-container');
 
-            // Resetar mensagens de erro e mostrar loading
             errorMessage.style.display = 'none';
-            loading.style.display = 'block';
+            if (loginSection.style.display !== 'none') {
+                loading.style.display = 'block';
+            }
 
             try {
                 // Faz a requisição POST com a senha
                 const response = await fetch('https://api.muvecom.com.br/v1/e8df5ebb-4f25-41d8-a5ce-baddb986dff6', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ password: password })
                 });
 
-                // Se a API não retornar sucesso, disparamos o erro de senha incorreta
                 if (!response.ok) {
                     throw new Error('Senha incorreta');
                 }
@@ -251,11 +351,14 @@
                     throw new Error('Formato de resposta inválido');
                 }
 
+                // Sucesso -> Guarda a senha em memória
+                currentPassword = password;
+
                 // 1. Iterar para remover nomes repetidos e manter sempre o de maior ID (mais atual)
                 const companyMap = new Map();
                 data.forEach(item => {
                     if (!item.company || !item.token) return; // ignora se não tiver company ou token
-                    
+
                     if (!companyMap.has(item.company)) {
                         companyMap.set(item.company, item);
                     } else {
@@ -275,10 +378,10 @@
 
                 // 4. Montar a tabela
                 tableBody.innerHTML = ''; // Limpa a tabela antes de preencher
-                
+
                 uniqueClients.forEach(client => {
                     const tr = document.createElement('tr');
-                    
+
                     // Coluna da Última Atualização (Data formatada)
                     const tdDate = document.createElement('td');
                     if (client.created_at) {
@@ -293,30 +396,29 @@
                     // Coluna do Nome da Empresa
                     const tdCompany = document.createElement('td');
                     tdCompany.textContent = client.company;
-                    
+
                     // Coluna da Ação (Botão)
                     const tdAction = document.createElement('td');
                     tdAction.style.textAlign = 'right';
-                    
+
                     const btn = document.createElement('a');
                     btn.href = `https://muvecom.github.io/dashboard-qa/?token=${encodeURIComponent(client.token)}`;
                     btn.target = '_blank'; // Abre em nova guia
                     btn.className = 'btn btn-acessar';
                     btn.textContent = 'Acessar Dashboard';
-                    
+
                     tdAction.appendChild(btn);
 
                     // Adiciona as colunas na linha
                     tr.appendChild(tdDate);
                     tr.appendChild(tdCompany);
                     tr.appendChild(tdAction);
-                    
+
                     tableBody.appendChild(tr);
                 });
 
-                // Se houver clientes, expande o contêiner e mostra a tabela
-                if(uniqueClients.length > 0) {
-                    mainContainer.style.maxWidth = '900px'; // Aumentei um pouco mais para acomodar a nova coluna de data
+                if (uniqueClients.length > 0) {
+                    mainContainer.style.maxWidth = '900px';
                     loginSection.style.display = 'none';
                     dashboardSection.style.display = 'block';
                 } else {
@@ -325,14 +427,16 @@
                 }
 
             } catch (error) {
-                // Em caso de erro (senha errada ou falha na API), mostra o aviso e mantém o formulário
+                // Em caso de erro (senha errada ou falha na API), mostra o aviso
                 errorMessage.textContent = 'Senha incorreta. Tente novamente.';
                 errorMessage.style.display = 'block';
-                document.getElementById('password').value = ''; // Limpa o campo de senha
+                document.getElementById('password').value = '';
+                currentPassword = null;
             } finally {
                 loading.style.display = 'none';
             }
-        });
+        }
     </script>
 </body>
+
 </html>
