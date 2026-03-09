@@ -206,13 +206,15 @@
         <div class="modal">
             <button class="btn-close" onclick="closeModal()">&times;</button>
             <h3>Adicionar Cliente ou Teste</h3>
-            <p>Para incluir novos clientes ou enviar os dados estruturados de um novo teste para o dashboard, repasse as
-                instruções do cURL abaixo para o seu time técnico (TI/Dev/QA).</p>
-            <p>Eles deverão enviar um requisição POST em formato JSON preenchendo os campos obrigatórios:</p>
+            <p>Para incluir novos clientes ou enviar os dados de um novo teste interativo para o dashboard, oriente o
+                seu time técnico a apontar o sistema deles para a nossa URL de testes preenchendo os campos obrigatórios
+                (<strong>mensagem</strong>, <strong>nome</strong> e <strong>webhook</strong>).</p>
+            <p style="margin-bottom: 0.5rem;"><strong>Copie a URL abaixo:</strong></p>
 
-            <div class="code-block">
-                <button class="btn-copy" onclick="copyInstructions(this)">Copiar</button>
-                <span id="instruction-code"></span>
+            <div class="code-block"
+                style="display: flex; justify-content: space-between; align-items: center; padding-right: 80px;">
+                <span id="instruction-code" style="word-break: break-all; font-size: 0.95rem;"></span>
+                <button class="btn-copy" onclick="copyInstructions(this)">Copiar URL</button>
             </div>
             <p style="font-size: 0.8rem; color: #888;">Nota: O endpoint está mascarado por segurança no código-fonte e é
                 restrito a esse painel.</p>
@@ -280,8 +282,7 @@
         };
 
         function getInstructionsUrl() {
-            const urlFormatada = atob(encodedEndpoint);
-            return `curl -X POST "${urlFormatada}" \\\n     -H "Content-Type: application/json" \\\n     -d '{\n           "mensagem": "Obrigatório", \n           "nome": "Obrigatório (não vazio)",\n           "webhook": "Obrigatório (não vazio)",\n           "token": "Opcional"\n         }'`;
+            return atob(encodedEndpoint);
         }
 
         function openModal() {
